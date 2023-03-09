@@ -9,17 +9,19 @@ const initialState = {
 };
 
 // async thunk 
-const fetchVideosByTags = createAsyncThunk("relatedVideos/fetchRelatedVideos", async ({tags}) => {
+const fetchVideosByTags = createAsyncThunk("relatedVideos/fetchRelatedVideos", async (tags) => {
+  console.log(tags);
     let queryString = tags?.length > 0 ? tags.map((tag)=>`tags_like=${tag}`).join('&'):'';
     const response = await fetch(
         `http://localhost:9000/videos?${queryString}`
     );
     const videos = await response.json();
-    console.log(videos);
-    return videos;
+    const sortedVideos =videos.sort((a, b) => parseInt(b.views) - parseInt(a.views));
+    return sortedVideos;
 });
 
 const relatedVideosSlice = createSlice({
+
     name: 'relatedVideos',
     initialState,
     extraReducers: (builder) => {
